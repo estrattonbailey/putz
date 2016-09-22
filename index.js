@@ -1,35 +1,16 @@
-const styles = ({ 
-  height = 2, 
-  color = 'currentColor', 
-  speed = 200,
-  ease = 'ease-in-out'
-}) => {
-  let s = document.createElement('style') 
-  s.innerHTML = `
-    .loader {
-      position: fixed;
-      width: 100%;
-      left: 0; top: 0;
-      height: 0;
-      z-index: 1000;
-    }
-    .loader__inner {
-      position: absolute;
-      width: 100%;
-      left: 0; top: 0;
-      height: ${height}px;
-      color: inherit;
-      background-color: ${color};
-      transition: transform ${speed}ms ${ease}; 
-      -webkit-transition: -webkit-transform ${speed}ms ${ease}; 
-      transform: translateX(-100%);
-      -webkit-transform: translateX(-100%);
-    }
-  `
-  document.head.insertBefore(s, document.head.children[0])
+const styles = (bar, outer, inner) => {
+  let i = document.createElement('style') 
+  let o = document.createElement('style') 
+  document.body.insertBefore(i, bar)
+  document.body.insertBefore(o, bar)
+
+  return {
+    outer: styles => styles ? o.innerHTML = `.${outer} {${styles}}` : o.innerHTML = '',
+    inner: styles => styles ? i.innerHTML = `.${inner} {${styles}}` : i.innerHTML = '' 
+  }
 }
 
-const createBar = root => {
+const createBar = (root, outer, inner) => {
   let o = document.createElement('div')
   let i = document.createElement('div')
 
@@ -47,50 +28,62 @@ const createBar = root => {
 }
 
 export default (root = document.body, opts = {}) => {
-  let active = false  
-  let progress = 0
   let timer = null
+  const speed = opts.speed || 200
+  const max = opts.max || 95 
+  const outerClass = opts.outer || 'loader'
+  const innerClass = opts.inner || 'loader__inner'
+  const state = {
+    active: false,
+    progress: 0
+  }
 
-  const bar = createBar(root)
-
-  styles(opts) 
+  const bar = createBar(root, outerClass, innerClass)
 
   const render = (val = 0) => {
-    progress = val
+    state.progress = val
     bar.inner.style.cssText = `
-      transform: translateY(${active ? '0' : '-100%'}) translateX(${-100 + progress}%); 
-      -webkit-transform: translateY(${active ? '0' : '-100%'}) translateX(${-100 + progress})`
+      transform: translateY(${state.active ? '0' : '-100%'}) translateX(${-100 + state.progress}%); 
+      -webkit-transform: translateY(${state.active ? '0' : '-100%'}) translateX(${-100 + state.progress})`
   }
 
   const go = val => {
-    if (!active){ return }
-    render(Math.min(val, opts.max || 95))
+    if (!state.active){ return }
+    render(Math.min(val, max))
   }
 
-  const inc = (val = (Math.random() * 10)) => go(progress + val)
+  const inc = (val = (Math.random() * 10)) => go(state.progress + val)
 
   const end = () => {
-    active = false
+    state.active = false
     render(100)
-    setTimeout(() => render(), opts.speed || 200)
+    setTimeout(() => render(), speed)
     if (timer){ clearTimeout(timer) }
   }
 
   const start = () => {
-    active = true
+    state.active = true
     inc()
   }
 
   const putz = (interval = 500) => {
-    if (!active){ return }
+    if (!state.active){ return }
     timer = setInterval(() => inc(), interval)
   }
+
+  const setStyle = styles(bar.outer, outerClass, innerClass)
   
-  return {
+  return Object.create({
     putz,
     start,
     inc,
     go,
-    end
-  }
+    end,
+    setStyle,
+    getState: () => state
+  },{
+    bar: {
+      value: bar
+    }
+  })
 }
