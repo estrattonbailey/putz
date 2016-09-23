@@ -65,9 +65,7 @@ Replace `putz` here with the classname you passed to the `classname` option, and
   height: 2px;
   background-color: #00C9FC;
   transition: transform 200ms ease-in-out; 
-  -webkit-transition: -webkit-transform 200ms ease-in-out; 
   transform: translateX(-100%);
-  -webkit-transform: translateX(-100%);
 }
 ```
 

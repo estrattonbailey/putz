@@ -28,8 +28,7 @@ export default (root = document.body, opts = {}) => {
   const render = (val = 0) => {
     state.progress = val
     bar.inner.style.cssText = `
-      transform: translateY(${state.active ? '0' : '-100%'}) translateX(${-100 + state.progress}%); 
-      -webkit-transform: translateY(${state.active ? '0' : '-100%'}) translateX(${-100 + state.progress})`
+      transform: translateY(${state.active ? '0' : '-100%'}) translateX(${-100 + state.progress}%);`
   }
 
   const go = val => {
