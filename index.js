@@ -3,6 +3,7 @@ const createBar = (root, classname) => {
   let i = document.createElement('div')
 
   o.className = classname 
+  i.className = `${classname}__inner`
   o.appendChild(i)
   root.insertBefore(o, root.children[0])
 
@@ -15,7 +16,8 @@ const createBar = (root, classname) => {
 export default (root = document.body, opts = {}) => {
   let timer = null
   const speed = opts.speed || 200
-  const classname = opts.classname || 'loader'
+  const classname = opts.classname || 'putz'
+  const trickle = opts.trickle || 5 
   const state = {
     active: false,
     progress: 0
@@ -35,7 +37,7 @@ export default (root = document.body, opts = {}) => {
     render(Math.min(val, 95))
   }
 
-  const inc = (val = (Math.random() * 10)) => go(state.progress + val)
+  const inc = (val = (Math.random() * trickle)) => go(state.progress + val)
 
   const end = () => {
     state.active = false
