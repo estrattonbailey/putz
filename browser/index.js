@@ -4,27 +4,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var styles = function styles(_ref) {
-  var _ref$height = _ref.height;
-  var height = _ref$height === undefined ? 2 : _ref$height;
-  var _ref$color = _ref.color;
-  var color = _ref$color === undefined ? 'currentColor' : _ref$color;
-  var _ref$speed = _ref.speed;
-  var speed = _ref$speed === undefined ? 200 : _ref$speed;
-  var _ref$ease = _ref.ease;
-  var ease = _ref$ease === undefined ? 'ease-in-out' : _ref$ease;
-
-  var s = document.createElement('style');
-  s.innerHTML = '\n    .loader {\n      position: fixed;\n      width: 100%;\n      left: 0; top: 0;\n      height: 0;\n      z-index: 1000;\n    }\n    .loader__inner {\n      position: absolute;\n      width: 100%;\n      left: 0; top: 0;\n      height: ' + height + 'px;\n      color: inherit;\n      background-color: ' + color + ';\n      transition: transform ' + speed + 'ms ' + ease + '; \n      -webkit-transition: -webkit-transform ' + speed + 'ms ' + ease + '; \n      transform: translateX(-100%);\n      -webkit-transform: translateX(-100%);\n    }\n  ';
-  document.head.insertBefore(s, document.head.children[0]);
-};
-
-var createBar = function createBar(root) {
+var createBar = function createBar(root, outerClass, innerClass) {
   var o = document.createElement('div');
   var i = document.createElement('div');
 
-  o.className = 'loader';
-  i.className = 'loader__inner';
+  o.className = outerClass;
+  i.className = innerClass;
 
   o.appendChild(i);
 
@@ -40,53 +25,57 @@ exports.default = function () {
   var root = arguments.length <= 0 || arguments[0] === undefined ? document.body : arguments[0];
   var opts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-  var active = false;
-  var progress = 0;
   var timer = null;
+  var speed = opts.speed || 200;
+  var max = opts.max || 95;
+  var outerClass = opts.outerClass || 'loader';
+  var innerClass = opts.innerClass || 'loader__inner';
+  var state = {
+    active: false,
+    progress: 0
+  };
 
-  var bar = createBar(root);
-
-  styles(opts);
+  var bar = createBar(root, outerClass, innerClass);
 
   var render = function render() {
     var val = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 
-    progress = val;
-    bar.inner.style.cssText = '\n      transform: translateY(' + (active ? '0' : '-100%') + ') translateX(' + (-100 + progress) + '%); \n      -webkit-transform: translateY(' + (active ? '0' : '-100%') + ') translateX(' + (-100 + progress) + ')';
+    state.progress = val;
+    bar.inner.style.cssText = '\n      transform: translateY(' + (state.active ? '0' : '-100%') + ') translateX(' + (-100 + state.progress) + '%); \n      -webkit-transform: translateY(' + (state.active ? '0' : '-100%') + ') translateX(' + (-100 + state.progress) + ')';
   };
 
   var go = function go(val) {
-    if (!active) {
+    if (!state.active) {
       return;
     }
-    render(Math.min(val, opts.max || 95));
+    render(Math.min(val, max));
   };
 
   var inc = function inc() {
     var val = arguments.length <= 0 || arguments[0] === undefined ? Math.random() * 10 : arguments[0];
-    return go(progress + val);
+    return go(state.progress + val);
   };
 
   var end = function end() {
-    active = false;
+    state.active = false;
     render(100);
     setTimeout(function () {
       return render();
-    }, opts.speed || 200);
+    }, speed);
     if (timer) {
       clearTimeout(timer);
     }
   };
 
   var start = function start() {
-    active = true;
+    state.active = true;
     inc();
   };
 
   var putz = function putz() {
     var interval = arguments.length <= 0 || arguments[0] === undefined ? 500 : arguments[0];
 
-    if (!active) {
+    if (!state.active) {
       return;
     }
     timer = setInterval(function () {
@@ -94,13 +83,20 @@ exports.default = function () {
     }, interval);
   };
 
-  return {
+  return Object.create({
     putz: putz,
     start: start,
     inc: inc,
     go: go,
-    end: end
-  };
+    end: end,
+    getState: function getState() {
+      return state;
+    }
+  }, {
+    bar: {
+      value: bar
+    }
+  });
 };
 
 },{}]},{},[1])(1)
