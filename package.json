@@ -1,6 +1,6 @@
 {
   "name": "putz",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "jsnext:main": "index.js",
@@ -24,8 +24,7 @@
     "type": "git",
     "url": "git+ssh://git@github.com/estrattonbailey/putz.git"
   },
-  "keywords": [
-  ],
+  "keywords": [],
   "author": "estrattonbailey",
   "license": "MIT",
   "bugs": {
