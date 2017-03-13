@@ -1,8 +1,7 @@
 # putz
-A tiny progress bar library for AJAX and SPAs in ES6. Full API with the ability to *putz*: increment randomly to simulate loading events.
+A super-small progress bar with a full API and the ability to *putz*: increment randomly to simulate loading events.
 
-ES6 Source: **~655bytes gzipped**
-UMD: **~1kb gzipped** 
+[![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](http://standardjs.com)
 
 ## Install
 ```
@@ -47,9 +46,12 @@ loader.putz(100)
 
 // Go to 100% and hide
 loader.end()
+
+// Remove bar from DOM
+loader.destroy()
 ```
 
-## Required CSS
+## Recommended CSS
 Replace `putz` here with the classname you passed to the `classname` option, and replace transition speed with the value passed to the `speed` option.
 ```css
 .putz {
